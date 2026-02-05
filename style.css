@@ -1,0 +1,151 @@
+/* Variable Definitions for Pastel Theme */
+:root {
+  --primary-color: #ffb7b2; /* Pastel Red/Pink */
+  --secondary-color: #ffdac1; /* Pastel Orange/Peach */
+  --accent-color: #e2f0cb; /* Pastel Green */
+  --text-color: #836953; /* Soft Brown text */
+  --btn-yes: #77dd77; /* Pastel Green */
+  --btn-no: #ff6961; /* Pastel Red */
+  --white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  background-color: #fce4ec; /* Fallback */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Prevent scrollbars from floating elements */
+  color: var(--text-color);
+}
+
+#app {
+  text-align: center;
+  z-index: 10;
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  max-width: 90%;
+  width: 500px;
+  animation: fadeIn 1s ease-out;
+}
+
+h1 {
+  font-family: "Dancing Script", cursive;
+  font-size: 3.5rem;
+  color: #ff6b6b;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.05);
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  font-weight: bold;
+  font-family: "Nunito", sans-serif;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.yes-btn {
+  background-color: var(--btn-yes);
+  color: white;
+}
+
+.no-btn {
+  background-color: var(--btn-no);
+  color: white;
+  position: relative; /* For moving it around later if we want absolute */
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Floating Hearts/Flowers Background */
+.floating-element {
+  position: absolute;
+  bottom: -100px;
+  animation: floatUp 15s linear infinite;
+  opacity: 0.6;
+  font-size: 24px;
+  z-index: 1;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-120vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+#notification {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #d63384;
+  min-height: 1.5em;
+}
+
+.header-image {
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
