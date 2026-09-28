@@ -1,4 +1,3 @@
-// DOM Elements
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const notification = document.getElementById("notification");
@@ -6,7 +5,6 @@ const question = document.getElementById("question");
 const headerImage = document.getElementById("headerImage");
 const bgMusic = document.getElementById("bgMusic");
 
-// No Button Logic
 const noTexts = [
   "No",
   "Are you sure?",
@@ -17,156 +15,163 @@ const noTexts = [
   "PLEASE POOKIE",
   "But :*(",
   "I am going to die",
-  "Yep I’m dead",
-  "ok ur talking to nathan’s ghost",
+  "Yep I'm dead",
+  "ok ur talking to nathan's ghost",
   "please babe",
   ":(((",
   "PRETTY PLEASE",
   "No :(",
-  "Crushie, don’t ignore me",
+  "Crushie, don't ignore me",
   "BFF, you gotta help me out",
-  "If you were my crush, you’d say yes",
-  "Bestie, I’m begging you",
+  "If you were my crush, you'd say yes",
+  "Bestie, I'm begging you",
   "Crushie vibes activated",
-  "BFF pact means you can’t say no",
+  "BFF pact means you can't say no",
   "Pretty please uwu",
   "Bestie us ahh kaya sasamahan mo ako",
 ];
 
+const floatElements = ["\u2764\ufe0f", "\ud83c\udf38", "\ud83c\udf39", "\ud83e\udd8b", "\ud83d\udc90", "\ud83e\udef0"];
+const burstElements = ["\u2764\ufe0f", "\ud83d\udc96", "\ud83d\udc97", "\ud83d\udc98", "\u2728"];
+
 let noClickCount = 0;
+let yesScale = 1;
+
+function playMusic() {
+  if (!bgMusic || !bgMusic.paused) return;
+
+  bgMusic.volume = 0.75;
+  bgMusic.play().catch((error) => {
+    console.log("Audio play failed:", error);
+  });
+}
+
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function popHearts(originElement, amount = 9) {
+  const rect = originElement.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  for (let index = 0; index < amount; index++) {
+    const heart = document.createElement("span");
+    heart.className = "burst-heart";
+    heart.textContent = burstElements[Math.floor(Math.random() * burstElements.length)];
+    heart.style.left = `${centerX}px`;
+    heart.style.top = `${centerY}px`;
+    heart.style.setProperty("--x", `${randomBetween(-95, 95)}px`);
+    heart.style.setProperty("--y", `${randomBetween(-125, -35)}px`);
+    heart.style.animationDelay = `${index * 22}ms`;
+    document.body.appendChild(heart);
+    heart.addEventListener("animationend", () => heart.remove(), { once: true });
+  }
+}
+
+function teaseNoButton() {
+  noBtn.classList.remove("is-teasing");
+  void noBtn.offsetWidth;
+  noBtn.classList.add("is-teasing");
+}
 
 noBtn.addEventListener("click", () => {
-  // Play music on first interaction if not playing
-  if (bgMusic.paused) {
-    bgMusic
-      .play()
-      .catch((e) =>
-        console.log("Audio play failed (user interaction needed):", e),
-      );
-  }
+  playMusic();
+  noClickCount += 1;
 
-  noClickCount++;
+  noBtn.textContent = noTexts[Math.min(noClickCount, noTexts.length - 1)];
 
-  // Cycle through the texts. If we reach the end, easier to just keep showing the last one or loop.
-  // Let's loop the last few to keep it 'unclickable' effectively or just loop all.
-  // If we go past the list, we can keep increasing the Yes button size.
+  yesScale = Math.min(2.25, 1 + noClickCount * 0.11);
+  yesBtn.style.setProperty("--btn-scale", yesScale.toFixed(2));
 
-  if (noClickCount < noTexts.length) {
-    noBtn.textContent = noTexts[noClickCount];
-  } else {
-    noBtn.textContent = noTexts[noTexts.length - 1];
-  }
-
-  // Make Yes button bigger every time No is clicked
-  const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-  yesBtn.style.fontSize = `${currentSize * 1.2}px`;
-
-  // Make No button move randomly/shake or just get smaller?
-  // User asked for "No" to be shown (implying the text changes).
-  // "if the user press no this will be showned ... "
+  teaseNoButton();
+  popHearts(noBtn, 4);
 });
 
-// Yes Button Logic
 yesBtn.addEventListener("click", () => {
-  // Play music
-  bgMusic.play().catch((e) => console.log(e));
+  playMusic();
 
-  // Change UI
-  question.textContent = "YAY! See you on the 14th! 💖";
-  headerImage.innerHTML = '<span style="font-size: 100px;">🐻🥰</span>'; // Change to happy bear/flower
-
-  // Hide buttons
+  question.textContent = "YAY! See you on the 14th! \ud83d\udc96";
+  headerImage.innerHTML = '<span style="font-size: 100px;">\ud83d\udc3b\ud83e\udd70</span>';
   yesBtn.style.display = "none";
   noBtn.style.display = "none";
-
   notification.textContent = "";
 
-  // Trigger Confetti
+  popHearts(yesBtn, 24);
   triggerConfetti();
-
-  // Save to Firebase (preserved from original logic logic if needed, but adjusted structure)
   saveProposalResponse();
 });
 
-// Floating Animation Logic
-function createFloatingElements() {
+function createFloatingElement() {
   const container = document.getElementById("heart-container");
-  const elements = ["❤", "🌸", "🌹", "🦋", "💐", "🩰"];
+  const element = document.createElement("div");
 
-  setInterval(() => {
-    const el = document.createElement("div");
-    el.classList.add("floating-element");
-    el.textContent = elements[Math.floor(Math.random() * elements.length)];
-    el.style.left = Math.random() * 100 + "vw";
-    el.style.animationDuration = Math.random() * 5 + 10 + "s"; // 10-15s
-    el.style.fontSize = Math.random() * 20 + 20 + "px"; // 20-40px
+  element.className = "floating-element";
+  element.textContent = floatElements[Math.floor(Math.random() * floatElements.length)];
+  element.style.setProperty("--left", `${randomBetween(-3, 100)}vw`);
+  element.style.setProperty("--size", `${randomBetween(20, 43)}px`);
+  element.style.setProperty("--drift", `${randomBetween(-95, 95)}px`);
+  element.style.setProperty("--spin", `${randomBetween(-1.2, 1.2)}turn`);
+  element.style.setProperty("--duration", `${randomBetween(10, 17)}s`);
+  element.style.setProperty("--delay", `${randomBetween(0, 0.9)}s`);
 
-    container.appendChild(el);
-
-    // Cleanup
-    setTimeout(() => {
-      el.remove();
-    }, 15000);
-  }, 500);
+  container.appendChild(element);
+  element.addEventListener("animationend", () => element.remove(), { once: true });
 }
 
-// Start animations
-createFloatingElements();
-
-// Confetti Helper
-function triggerConfetti() {
-  const duration = 15 * 1000;
-  const animationEnd = Date.now() + duration;
-  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-  function randomInOut(min, max) {
-    return Math.random() * (max - min) + min;
+function createFloatingElements() {
+  for (let index = 0; index < 14; index++) {
+    window.setTimeout(createFloatingElement, index * 135);
   }
 
-  const interval = setInterval(function () {
+  window.setInterval(createFloatingElement, 430);
+}
+
+function triggerConfetti() {
+  if (typeof confetti !== "function") return;
+
+  const duration = 8000;
+  const animationEnd = Date.now() + duration;
+  const defaults = {
+    startVelocity: 28,
+    spread: 360,
+    ticks: 74,
+    scalar: 0.92,
+    zIndex: 100,
+  };
+
+  confetti({
+    ...defaults,
+    particleCount: 140,
+    spread: 80,
+    origin: { x: 0.5, y: 0.62 },
+  });
+
+  const interval = window.setInterval(() => {
     const timeLeft = animationEnd - Date.now();
 
     if (timeLeft <= 0) {
-      return clearInterval(interval);
+      window.clearInterval(interval);
+      return;
     }
 
-    const particleCount = 50 * (timeLeft / duration);
-    // since particles fall down, start a bit higher than random
-    confetti(
-      Object.assign({}, defaults, {
-        particleCount,
-        origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 },
-      }),
-    );
-    confetti(
-      Object.assign({}, defaults, {
-        particleCount,
-        origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 },
-      }),
-    );
-  }, 250);
+    const particleCount = Math.max(12, Math.floor(42 * (timeLeft / duration)));
+
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomBetween(0.08, 0.28), y: randomBetween(-0.12, 0.22) },
+    });
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: randomBetween(0.72, 0.92), y: randomBetween(-0.12, 0.22) },
+    });
+  }, 280);
 }
 
-// Firebase Integration (Optional - adapting previous logic if user still wants to save)
-// Keeping this minimal or commented out if not strictly needed by new prompt,
-// BUT user's original file had it. I will try to keep it functional visually first.
-// If the user wants to *send* a proposal (original code), that's different from *answering* one.
-// The new prompt implies "answering" (Will you be my valentine -> Yes/No).
-// I will assuming we are converting TO a question page.
-// I will adding a dummy function for now to not break if firebase ref is missing
-// or I can try to use existing auth if available globally.
-
-// Existing Firebase imports were in a module script, but this is a regular script.
-// Assuming firebase.init.js sets up 'firebase' global or similar?
-// Actually current index.html had type="module" missing for script.js but firebase.init.js was imported?
-// Wait, the previous index.html had:
-// <script src="script.js"></script>
-// And firebase.init.js was NOT included in index.html in the view I saw.
-// Ah, I need to check if I should keep the firebase functionality.
-// "Send Proposal" form was replaced by "Will you be my valentine" question.
-// I will omit the firebase saving for the YES/NO interaction unless requested,
-// strictly following the "make it like this" visual design.
 function saveProposalResponse() {
-  // Placeholder if we want to add database saving later
   console.log("Response recorded!");
 }
+
+createFloatingElements();
